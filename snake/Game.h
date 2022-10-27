@@ -17,53 +17,6 @@ class
 	short spawnX = NULL;
 	short spawnY = NULL;
 
-	class
-	{
-		bool telT(short& _x, short& _y)
-		{
-			if (_x < 0) _x = WIN::WIDTH - 1;
-			else if (_x >= WIN::WIDTH) _x = 0;
-			else if (_y < 0) _y = WIN::HEIGHT - 1;
-			else if (_y >= WIN::HEIGHT) _y = 0;
-
-			return true;
-		}
-		bool telF(short& _x, short& _y)
-		{
-			return !(_x < 0 || _y < 0 || _x >= WIN::WIDTH || _y < 0 || _y >= WIN::HEIGHT);
-		}
-
-		enum DELAY
-		{
-			DL_1 = 600,
-			DL_2 = 400,
-			DL_3 = 200
-		} delay = DL_3;
-		bool tel = true;
-
-	public:
-		void chDl() 
-		{
-			switch (delay)
-			{
-			case DL_1: delay = DL_2; break;
-			case DL_2: delay = DL_3; break;
-			case DL_3: delay = DL_1; break;
-			}
-		}
-		DELAY getDl() { return delay; }
-			 
-		void chTel()
-		{
-			tel != tel;
-		}
-		bool tel_exec(short& _x, short& _y)
-		{
-			if (tel) return telT(_x, _y);
-			else return telF(_x, _y);
-		}
-	} GameRule;
-
 	void spawnFood()
 	{
 		COORD temp;
@@ -152,7 +105,58 @@ class
 	}
 
 public:
-	const int gameOverPause = 1000;
+	const int gameOverPause = 500;
+
+	class
+	{
+		bool telT(short& _x, short& _y)
+		{
+			if (_x < 0) _x = WIN::WIDTH - 1;
+			else if (_x >= WIN::WIDTH) _x = 0;
+			else if (_y < 0) _y = WIN::HEIGHT - 1;
+			else if (_y >= WIN::HEIGHT) _y = 0;
+
+			return true;
+		}
+		bool telF(short& _x, short& _y)
+		{
+			return !(_x < 0 || _y < 0 || _x >= WIN::WIDTH || _y < 0 || _y >= WIN::HEIGHT);
+		}
+
+		enum DELAY
+		{
+			DL_1 = 500,
+			DL_2 = 300,
+			DL_3 = 100
+		} delay = DL_3;
+		bool tel = true;
+
+	public:
+		void chDl()
+		{
+			switch (delay)
+			{
+			case DL_1: delay = DL_2; break;
+			case DL_2: delay = DL_3; break;
+			case DL_3: delay = DL_1; break;
+			}
+		}
+		DELAY getDl() { return delay; }
+
+		void chTel()
+		{
+			tel = !tel;
+		}
+		bool getTel()
+		{
+			return tel;
+		}
+		bool tel_exec(short& _x, short& _y)
+		{
+			if (tel) return telT(_x, _y);
+			else return telF(_x, _y);
+		}
+	} GameRule;
 
 	void lvlRead(string LvlName)
 	{
@@ -207,13 +211,14 @@ public:
 		}
 		else throw ge::GameExcept("File not found.");
 	}
-	void startGame()
+	void startGame(unsigned int foodQty = 30)
 	{
 		spawnSnake();
 
 		srand(time(NULL));
-		for (int i = 0; i < 35; i++) spawnFood();
+		for (int i = 0; i < foodQty; i++) spawnFood();
 
+		//Создание потока для ввода управления
 		bool key_log = true;
 		thread control([&]() { while (key_log) snake->Head.changeDir(); });
 

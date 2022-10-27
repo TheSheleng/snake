@@ -2,6 +2,7 @@
 
 #include "LvlManager.h"
 #include "MenuByList.h"
+#include "Game.h"
 
 struct
 {
@@ -10,14 +11,12 @@ struct
 		mbl::MenuByList main_m("SNAKE", {
 			"Play",
 			"Setting",
-			"Top list",
 			"Exit",
 		});
 		enum
 		{
 			PLAY,
 			SETT,
-			TOP,
 			EXIT
 		};
 
@@ -27,7 +26,6 @@ struct
 			{
 			case PLAY: return true;
 			case SETT: choiceSett(); break;
-			case TOP: break;
 			case EXIT: return false;
 			}
 		}
@@ -35,26 +33,33 @@ struct
 	bool choiceSett()
 	{
 		mbl::MenuByList settings_m("SETTINGS", {
-			"In developing 1",
-			"In developing 2",
-			"In developing 3",
+			"Teleport: true",
+			"Delay",
 			"Back",
 		});
 		enum
 		{
-			IN_DEV_1,
-			IN_DEV_2,
-			IN_DEV_3,
+			TELEP,
+			DELAY,
 			BACK
 		};
 
 		while (true)
 		{
+			//Вывод настроек телепорта
+			string tel_s = "Teleport: ";
+			tel_s += (PlayGround.GameRule.getTel() ? " true" : "false");
+			settings_m.set(tel_s, TELEP);
+
+			//Вывод настроек задержки
+			string del_s = "Deley: ";
+			del_s += to_string(PlayGround.GameRule.getDl());
+			settings_m.set(del_s, DELAY);
+
 			switch (settings_m.getChoice())
 			{
-			case IN_DEV_1: break;
-			case IN_DEV_2: break;
-			case IN_DEV_3: break;
+			case TELEP: PlayGround.GameRule.chTel(); break;
+			case DELAY: PlayGround.GameRule.chDl(); break;
 			case BACK: return true;
 			}
 		}
@@ -83,8 +88,10 @@ struct
 		int page = 0;
 		while (true)
 		{
+			//Страница
 			const int FIRST_ON_PAGE = page * (LVL_LAST + 1);
 
+			//Подстановки имён файлов
 			lvlsel_m.set(FIRST_ON_PAGE + LVL_1 < lvls.getQty() ? lvls[FIRST_ON_PAGE + LVL_1] : "-", LVL_1);
 			lvlsel_m.set(FIRST_ON_PAGE + LVL_2 < lvls.getQty() ? lvls[FIRST_ON_PAGE + LVL_2] : "-", LVL_2);
 			lvlsel_m.set(FIRST_ON_PAGE + LVL_LAST < lvls.getQty() ? lvls[FIRST_ON_PAGE + LVL_LAST] : "-", LVL_LAST);
