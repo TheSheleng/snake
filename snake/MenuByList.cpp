@@ -4,7 +4,8 @@ wp::Img& mbl::MenuByList::render_m(const unsigned int& _sel)
 {
     wp::Img screen;
 
-    short str_num = 5;
+    //Редактируемая строка (5 - высота начала)
+    short str_num = 5; 
 
     //Шапка
     const char* NAME_DECOR = "---===<*|||*>===---";
@@ -12,19 +13,19 @@ wp::Img& mbl::MenuByList::render_m(const unsigned int& _sel)
     screen.addStr(mName, { (short)(WIN::WIDTH - mName.size()) / 2, str_num += 2 });
     screen.addStr(NAME_DECOR, { (short)(WIN::WIDTH - strlen(NAME_DECOR)) / 2, str_num += 2 });
 
-    //Настройки вида кнопки
+    //Параметры вида кнопки
     const short INTERVAL = 7;
-    const short BUTT_WIDTH = 17;
+    const short BUTT_WIDTH = 30;
     const short SEL_SHIFT = 2;
 
     const short BUTT_LEFT = (WIN::WIDTH - BUTT_WIDTH) / 2;
     const short BUTT_RIGHT = BUTT_WIDTH + BUTT_LEFT - 1;
 
     //Кнопки
-
     str_num += INTERVAL / 2;
     for (short i = 0; i < size; i++)
     {
+        //Выбран ли пункт
         bool selected = _sel == i;
 
         short height = i * INTERVAL + str_num;
@@ -52,7 +53,6 @@ wp::Img& mbl::MenuByList::render_m(const unsigned int& _sel)
         height++;
         for (short w = 0; w < BUTT_WIDTH; w++)
             screen.setCh('#', { sel_left + w, height });
-
     }
 
     return screen;
@@ -60,11 +60,14 @@ wp::Img& mbl::MenuByList::render_m(const unsigned int& _sel)
 
 mbl::MenuByList::MenuByList(string mName, initializer_list<string> list)
 {
+    //Заголовок
     this->mName = mName;
 
+    //Место
     size = list.size();
     this->list = new string[size];
 
+    //Копирование
     for (int i = 0; i < size; i++)
         this->list[i] = list.begin()[i];
 }
@@ -77,31 +80,25 @@ mbl::MenuByList::~MenuByList()
 void mbl::MenuByList::set(string mName, int index)
 {
     if (index >= 0 && index < size)
-    {
         list[index] = mName;
-    }
 }
 
 int mbl::MenuByList::getChoice()
 {
-    system("cls");
-
-    int selected = 0;
+    int selected = 0; //Фокус
     while (true)
     {
         wp::Window.set_screen(render_m(selected));
 
-        char butt = _getch();
-        switch (butt)
-        {
-        case NEXT_SELECT: if (selected < size - 1) selected++; break;
-        case PREVIOUS_SELECT:if (selected > 0)selected--; break;
-        case ENTER_BUTT: return selected;
-        }
+        //Выбор
+        Sleep(200);
+        if (GetAsyncKeyState(NEXT_SELECT)) if (selected < size - 1) selected++;
+        if (GetAsyncKeyState(PREVIOUS_SELECT)) if (selected > 0)selected--;
+        if (GetAsyncKeyState(ENTER_BUTT)) return selected;
     }
 }
 
 void mbl::SAbility::enterPause()
 {
-    while (true) if (_getch() == ENTER_BUTT) break;
+    while (true) if (_getch() == mbl::SAbility::PAUSE_BUTT) break;
 }

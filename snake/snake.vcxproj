@@ -133,7 +133,6 @@
     <ClCompile Include="snake.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Entity.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameExcept.h" />
     <ClInclude Include="GameMenus.h" />

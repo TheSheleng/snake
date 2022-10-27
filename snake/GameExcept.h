@@ -11,6 +11,6 @@ namespace ge
 
 	public:
 		GameExcept(string ex);
-		void errPrint();
+		void errPrint() const;
 	};
 }

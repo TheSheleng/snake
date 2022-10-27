@@ -1,11 +1,10 @@
 #pragma once
 
-#include <string>
 #include <windows.h>
 
 using namespace std;
 
-namespace WIN
+namespace WIN //Параметры окна
 {
 	const int WIDTH = 120;
 	const int HEIGHT = 60;
@@ -22,35 +21,19 @@ namespace wp
 		Img() = default;
 
 		template <class T>
-		void addStr(T _img, COORD coord = {0, 0})
+		void addStr(T _img, COORD coord = {0, 0}) //Запись строки
 		{
 			int poss = coord.X + coord.Y * WIN::WIDTH;
 			for (int i = 0, y = 0; _img[i] != '\0'; i++, y++)
 				this->_img[i + poss] = _img[i];
 		}
-
-		void setCh(const char _img, COORD coord = { 0, 0 })
+		void setCh(const char _img, COORD coord = { 0, 0 }) //Запись символа
 		{
 			this->_img[coord.X + coord.Y * WIN::WIDTH] = _img;
 		}
-
-		void set(const Img& _img, COORD coord = { 0, 0 })
-		{
-			int poss = coord.X + coord.Y * WIN::WIDTH;
-
-			for (int y = 0; y < WIN::HEIGHT; y++)
-				for (int x = 0; x < WIN::WIDTH; x++)
-					(*this)[x][y] = 0;
-		}
-
-		operator const char* ()
+		operator const char* () const //Взять изображение
 		{
 			return _img;
-		}
-
-		char* operator [] (int index)
-		{
-			return &_img[index];
 		}
 	};
 
@@ -60,21 +43,7 @@ namespace wp
 		DWORD dwBytesWritten = NULL;
 
 	public:
-		void fixSize(const int _w, const int _h)
-		{
-			_COORD coord;
-			coord.X = _w;
-			coord.Y = _h;
-			_SMALL_RECT Rect;
-			Rect.Top = 0;
-			Rect.Left = 0;
-			Rect.Bottom = _h - 1;
-			Rect.Right = _w - 1;
-			HANDLE Handle = GetStdHandle(STD_OUTPUT_HANDLE);
-			SetConsoleScreenBufferSize(Handle, coord);
-			SetConsoleWindowInfo(Handle, TRUE, &Rect);
-		}
-
+		//Вывод картинки
 		void set_screen(Img& _img)
 		{		
 			WriteConsoleOutputCharacterA(
@@ -85,6 +54,5 @@ namespace wp
 				&dwBytesWritten
 			);
 		}
-		
 	} Window;
 }

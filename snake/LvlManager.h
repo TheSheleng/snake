@@ -18,6 +18,7 @@ public:
     ~LvlManager();
 
     void analyzeFolder();
-    string& operator[] (int index);
-    int getQty();
+    const string& operator[] (int index) const;
+
+    int getQty() const;
 };

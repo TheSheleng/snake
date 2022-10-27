@@ -93,6 +93,63 @@ class
 
 		delete snake;
 	}
+	void clearMap() 
+	{
+		diedSnake();
+		for (short y = 0; y < WIN::HEIGHT; y++)
+			for (short x = 0; x < WIN::WIDTH; x++)
+				if (objs[x][y] != nullptr)
+				{
+					delete[] objs[x][y];
+					objs[x][y] = nullptr;
+				}
+	}
+
+	void snakeBodyDisplace()
+	{
+		//"Поджатие" хвоста
+		if (snake->body.size() >= snake->getLen())
+		{
+			objs[snake->body.front().loc.X][snake->body.front().loc.Y] = nullptr;
+			snake->body.pop();
+		}
+
+		//"Скачёк" телом
+		snake->body.emplace(snake->Head.loc.X, snake->Head.loc.Y);
+		objs[snake->Head.loc.X][snake->Head.loc.Y] = &snake->body.back();
+	}
+	bool snakeHeadMove()
+	{
+		//Изменение координат головы
+		snake->Head.move();
+
+		//Попытка телепорта
+		if (!GameRule.tel_exec(snake->Head.loc.X, snake->Head.loc.Y)) return false;
+
+		//Возможная коллизия
+		if (objs[snake->Head.loc.X][snake->Head.loc.Y] != nullptr)
+			switch (objs[snake->Head.loc.X][snake->Head.loc.Y]->getTexture())
+			{
+			//Препядствия
+			case TXTRS::SEGMENT:
+			case TXTRS::WALL: return false;
+
+			//Еда
+			case TXTRS::FOOD:
+				//удаление с карты
+				delete[] objs[snake->Head.loc.X][snake->Head.loc.Y];
+				objs[snake->Head.loc.X][snake->Head.loc.Y] = nullptr;
+
+				spawnFood();
+				snake->grow_up();
+				break;
+			}
+
+		//Запись на курту
+		objs[snake->Head.loc.X][snake->Head.loc.Y] = &snake->Head;
+
+		return true;
+	}
 
 public:
 	const int gameOverPause = 1000;
@@ -112,6 +169,7 @@ public:
 				{
 				case TXTRS::WALL: objs[x++][y] = new Wall; break;
 				case TXTRS::HEAD:
+					//Обязательно должна быть только одна точка старта
 					if (!headWritten)
 					{
 						spawnX = x++;
@@ -122,6 +180,7 @@ public:
 					else throw ge::GameExcept("There is more than one starting position on the map.");
 					break;
 
+				//Разные смещения координат
 				case TXTRS::SPACE: x++; break;
 				case '\n':
 				case EOF:
@@ -131,7 +190,7 @@ public:
 				default: throw ge::GameExcept("Unknown object.");
 				}
 
-
+				//Игнорирование объектов за картой
 				if (x >= WIN::WIDTH)
 				{
 					char ch = lvlFile.get();
@@ -148,12 +207,11 @@ public:
 		}
 		else throw ge::GameExcept("File not found.");
 	}
-
 	void startGame()
 	{
 		spawnSnake();
 
-		srand(time(0));
+		srand(time(NULL));
 		for (int i = 0; i < 35; i++) spawnFood();
 
 		bool key_log = true;
@@ -164,52 +222,21 @@ public:
 		key_log = false;
 		control.join();
 
-		diedSnake();
-		for (short y = 0; y < WIN::HEIGHT; y++)
-			for (short x = 0; x < WIN::WIDTH; x++)
-				if (objs[x][y] != nullptr)
-				{
-					delete[] objs[x][y];
-					objs[x][y] = nullptr;
-				}
+		clearMap();
 	}
-
 	bool teek()
 	{
+		//Вывод и пауза
 		PlayGround.print();
 		Sleep(GameRule.getDl());
 
-		if (!snake->increased())
-		{
-			objs[snake->body.front().loc.X][snake->body.front().loc.Y] = nullptr;
-			snake->body.pop();
-		}
-
-		snake->body.emplace(snake->Head.loc.X, snake->Head.loc.Y);
-		objs[snake->Head.loc.X][snake->Head.loc.Y] = &snake->body.back();
-		
-		snake->Head.move();
-
-		if (!GameRule.tel_exec(snake->Head.loc.X, snake->Head.loc.Y)) return false;
-
-		if (objs[snake->Head.loc.X][snake->Head.loc.Y] != nullptr)
-			switch (objs[snake->Head.loc.X][snake->Head.loc.Y]->getTexture())
-			{
-			case TXTRS::SEGMENT:
-			case TXTRS::WALL: return false;
-			case TXTRS::FOOD: 
-				delete[] objs[snake->Head.loc.X][snake->Head.loc.Y];
-				objs[snake->Head.loc.X][snake->Head.loc.Y] = nullptr;
-				spawnFood();
-				snake->grow_up(); 
-				break;
-			}
-
-		objs[snake->Head.loc.X][snake->Head.loc.Y] = &snake->Head;
+		//Движение змейки
+		snakeBodyDisplace();
+		if (!snakeHeadMove()) 
+			return false;
 
 		return true;
 	}
-
 	void print()
 	{
 		wp::Img screen;

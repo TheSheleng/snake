@@ -8,15 +8,15 @@ using namespace std;
 
 namespace mbl
 {
-	enum
-	{
-		NEXT_SELECT = 's',
-		PREVIOUS_SELECT = 'w',
-		ENTER_BUTT = 13
-	};
-
 	class MenuByList
 	{
+		static enum
+		{
+			NEXT_SELECT = 0x53,
+			PREVIOUS_SELECT = 0x57,
+			ENTER_BUTT = 13
+		};
+
 		int size;
 		string mName;
 		string* list;
@@ -33,6 +33,9 @@ namespace mbl
 
 	struct SAbility
 	{
+		static const int PAUSE_BUTT = 13;
+
+		//Пауза до нажатия опр. клавиши
 		static void enterPause();
 	};
 }
