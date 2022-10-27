@@ -24,9 +24,6 @@
     <ClCompile Include="LvlManager.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="GameMenus.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="GameExcept.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
@@ -44,9 +41,6 @@
     <ClInclude Include="Objects.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="AsTwoDim.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="LvlManager.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -56,5 +50,11 @@
     <ClInclude Include="GameExcept.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

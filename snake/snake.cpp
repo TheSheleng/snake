@@ -1,25 +1,35 @@
-﻿#include "GameMenus.h"
-#include "LvlManager.h"
+﻿#include "LvlManager.h"
+#include "GameMenus.h"
 #include "Game.h"
+
+#include <iostream>
 
 using namespace std;
 
-bool main()
+int main()
 {
 	wp::Window.fixSize(WIN::WIDTH, WIN::HEIGHT);
 
-	Menus _menus;
 	LvlManager lvlList;
 
 	while (true)
 		try 
 		{
-			if (_menus.choiceMain())
+			if (Menus.choiceMain())
 			{
 				lvlList.analyzeFolder();
-				int choose = _menus.choiceLvl(lvlList);
+				int choose = Menus.choiceLvl(lvlList);
 
-				if (choose != -1) PlayGround.startGame(lvlList[choose]);
+				if (choose != EOF)
+				{
+					do 
+					{ 
+						PlayGround.lvlRead(lvlList[choose]);
+						PlayGround.startGame(); 
+						Sleep(PlayGround.gameOverPause); 
+					}
+					while (Menus.choiceRes());
+				}
 			}
 			else return true;
 	}
